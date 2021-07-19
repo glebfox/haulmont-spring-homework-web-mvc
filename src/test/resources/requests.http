@@ -1,0 +1,75 @@
+GET http://localhost:8080/rest/status.do?id=1
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+###
+
+GET http://localhost:8080/rest/status.do?id=404
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 404, "Response status is not 404");
+});
+%}
+
+###
+
+POST http://localhost:8080/rest/register.do
+Content-Type: application/x-www-form-urlencoded
+
+userName=user1&password=pass&orderNumber=V5184208
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.global.set('createdId', response.body);
+});
+%}
+
+###
+
+POST http://localhost:8080/rest/deposit.do
+Content-Type: application/x-www-form-urlencoded
+
+id={{createdId}}&amount=1145000
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+###
+
+GET http://localhost:8080/rest/status.do?id={{createdId}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+  client.assert(response.body.status === 'finished', "Order status is not 'finished'");
+});
+%}
+
+###
+
+DELETE http://localhost:8080/rest/reverse.do?id={{createdId}}
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});
+%}
+
+###
+
+DELETE http://localhost:8080/rest/reverse.do?id=9999
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 404, "Response status is not 404");
+});
+%}
