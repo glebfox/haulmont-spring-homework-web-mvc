@@ -1,5 +1,14 @@
 version: '3.7'
 services:
+  ws:
+    image: ghcr.io/glebfox/haulmont-spring-homework-web-mvc:latest
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      - CATALINA_OPTS=-DJDBC_DATABASE_URL="jdbc:postgresql://db:5432/db?user=app&password=pass"
+    depends_on:
+      - db
   db:
     image: postgres:alpine
     ports:
